@@ -1,0 +1,28 @@
+{
+	"name": "Umbraco Video Processing Demo",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"shutdownAction": "stopCompose",
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [9000, 9001],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "bash -i scripts/init-workspace.sh",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-dotnettools.csharp",
+				"ms-dotnettools.csdevkit",
+				"ms-dotnettools.vscodeintellicode-csharp"
+			]
+		}
+	}
+}
