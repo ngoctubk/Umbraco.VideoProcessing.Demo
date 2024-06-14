@@ -24,6 +24,9 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "dotnet restore",
 
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "bash -i scripts/init-workspace.sh",
+
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
