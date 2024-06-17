@@ -6,9 +6,22 @@ services:
     command: sleep infinity
     network_mode: service:minioS3
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    network_mode: service:minioS3
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    restart: unless-stopped
+    environment:
+      SA_PASSWORD: P@ssw0rd
+      ACCEPT_EULA: Y
+    network_mode: service:minioS3
+
   minioS3:
     image: minio/minio
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: admin@123  
     command: server --console-address ":9001" /data
+

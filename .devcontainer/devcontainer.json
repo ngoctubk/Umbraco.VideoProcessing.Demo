@@ -14,7 +14,7 @@
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [9000, 9001],
+	"forwardPorts": [9000, 9001, 15672],
 	// "portsAttributes": {
 	//		"5001": {
 	//			"protocol": "https"
@@ -25,17 +25,32 @@
 	// "postCreateCommand": "dotnet restore",
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "bash -i scripts/init-workspace.sh",
+	"postCreateCommand": "bash .devcontainer/mssql/postCreateCommand.sh 'P@ssw0rd' './bin/Debug/' './.devcontainer/mssql/'",
 
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
+		"settings": { 
+				"mssql.connections": [
+					{
+						"server": "localhost,1433",
+						"database": "",
+						"authenticationType": "SqlLogin",
+						"user": "sa",
+						"password": "P@ssw0rd",
+						"emptyPasswordInput": false,
+						"savePassword": false,
+						"profileName": "mssql-container"
+					}
+				]
+			},
 		"vscode": {
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-dotnettools.csharp",
 				"ms-dotnettools.csdevkit",
-				"ms-dotnettools.vscodeintellicode-csharp"
+				"ms-dotnettools.vscodeintellicode-csharp",
+				"ms-mssql.mssql"
 			]
 		}
 	}
