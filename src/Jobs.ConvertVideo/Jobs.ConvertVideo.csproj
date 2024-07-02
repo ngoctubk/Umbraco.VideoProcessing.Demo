@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-Jobs.ConvertVideo-fa4e133a-0c53-4a32-b95a-6efb2310558e</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MasterPlaylist.m3u8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="MasterPlaylist.m3u8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.0" />
+    <PackageReference Include="CliWrap" Version="3.6.6" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Commons\Commons.csproj" />
+    <ProjectReference Include="..\MassTransit.Messages\MassTransit.Messages.csproj" />
+  </ItemGroup>
+</Project>

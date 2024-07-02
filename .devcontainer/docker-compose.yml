@@ -18,6 +18,10 @@ services:
       ACCEPT_EULA: Y
     network_mode: service:minioS3
 
+  redis:
+    image: redis/redis-stack
+    network_mode: service:minioS3
+
   minioS3:
     image: minio/minio
     environment:

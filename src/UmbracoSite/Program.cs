@@ -1,5 +1,6 @@
 using Common.Umbraco.StorageProviders.S3.DependencyInjection;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Umbraco.Cms.Core.Notifications;
 using UmbracoSite;
@@ -22,10 +23,18 @@ builder.Services.Configure<MessageBrokerSettings>(builder.Configuration.GetSecti
 
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<MessageBrokerSettings>>().Value);
 
+builder.Services.AddDbContext<OutboxDbContext>(options =>
+                        options.UseSqlServer(builder.Configuration.GetConnectionString("OutboxConnectionString")));
+
 builder.Services.AddMassTransit(busConfiguration =>
 {
     busConfiguration.SetKebabCaseEndpointNameFormatter();
-    
+    busConfiguration.AddEntityFrameworkOutbox<OutboxDbContext>(o =>
+    {
+        o.UseSqlServer();
+        o.UseBusOutbox();
+    });
+
     busConfiguration.UsingRabbitMq((context, configurator) =>
     {
         MessageBrokerSettings settings = context.GetRequiredService<MessageBrokerSettings>();

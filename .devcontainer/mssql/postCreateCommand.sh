@@ -5,6 +5,12 @@ SApassword=$1
 dacpath=$2
 sqlpath=$3
 
+echo "install dotnet ef tool"
+dotnet tool install --global dotnet-ef
+
+echo "generate a developer certificate"
+dotnet dev-certs https
+
 echo "SELECT * FROM SYS.DATABASES" | dd of=testsqlconnection.sql
 for i in {1..60};
 do
@@ -29,9 +35,9 @@ do
     fi
 done
 
-for f in $sqlpath/*
+for f in "$sqlpath"/*.sql
 do
-    if [ $f == $sqlpath/*".sql" ]
+    if [ -f "$f" ]
     then
         sqlfiles="true"
         echo "Found SQL file $f"
@@ -40,9 +46,9 @@ done
 
 if [ $sqlfiles == "true" ]
 then
-    for f in $sqlpath/*
+    for f in "$sqlpath"/*.sql
     do
-        if [ $f == $sqlpath/*".sql" ]
+        if [ -f "$f" ]
         then
             echo "Executing $f"
             /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SApassword -d master -i $f

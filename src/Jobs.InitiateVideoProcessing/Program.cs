@@ -1,32 +1,18 @@
-
 using Jobs.InitiateVideoProcessing;
+using Jobs.InitiateVideoProcessing.Settings;
 using MassTransit;
-using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-builder.Services.Configure<MessageBrokerSettings>(builder.Configuration.GetSection("MessageBroker"));
+builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection("CommonSettings"));
 
-builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<MessageBrokerSettings>>().Value);
+builder.Services.AddDbContext<MediaProcessingDbContext>(options => 
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("MediaProcessMetadataConnectionString")));
 
-builder.Services.AddMassTransit(busConfiguration =>
-{
-    busConfiguration.SetKebabCaseEndpointNameFormatter();
-
-    busConfiguration.AddConsumer<InitiateVideoProcessingConsumer>();
-
-    busConfiguration.UsingRabbitMq((context, configurator) =>
-    {
-        MessageBrokerSettings settings = context.GetRequiredService<MessageBrokerSettings>();
-        configurator.PrefetchCount = 10;
-        configurator.Host(new Uri(settings.Host), h =>
-        {
-            h.Username(settings.Username);
-            h.Password(settings.Password);
-        });
-        configurator.ConfigureEndpoints(context);
-    });
-});
+builder.AddAmazonS3();
+builder.AddMassTransit();
+builder.AddRedisLock();
 
 var host = builder.Build();
-host.Run();
+await host.RunAsync();
