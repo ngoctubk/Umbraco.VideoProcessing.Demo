@@ -49,23 +49,22 @@ public class SliceVideoConsumer(IOptions<CommonSettings> optionCommonSettings,
                             .Add(cutFilesName)
                         ).ExecuteAsync();
 
-        string[] allFiles = Directory.GetFiles(cutDirectoryPath, "*.*", SearchOption.AllDirectories);
-        foreach (var file in allFiles.OrderBy(f => f))
+        string[] playListFiles = Directory.GetFiles(cutDirectoryPath, "*.m3u8", SearchOption.AllDirectories);
+        foreach (var file in playListFiles.OrderBy(f => f))
         {
             string relativeFile = file.Replace(rootMediaPath, "");
-
-            Console.WriteLine(relativeFile);
-
             await UploadFileToS3(file, relativeFile);
+            await PublishPlaylistUploadedEvent(relativeFile, mediaPath);
+        }
 
-            if (relativeFile.EndsWith(extension))
-            {
-                await PublishVideoPartUploadedEvent(relativeFile, mediaPath);
-            }
-            else if (relativeFile.EndsWith(playlistExtension))
-            {
-                await PublishPlaylistUploadedEvent(relativeFile, mediaPath);
-            }
+        string[] allFiles = Directory.GetFiles(cutDirectoryPath, "*.*", SearchOption.AllDirectories);
+        foreach (var file in allFiles
+                                .Where(f => !f.EndsWith(playlistExtension))
+                                .OrderBy(f => f))
+        {
+            string relativeFile = file.Replace(rootMediaPath, "");
+            await UploadFileToS3(file, relativeFile);
+            await PublishVideoPartUploadedEvent(relativeFile, mediaPath);
         }
 
         await PublishVideoCutEvent(mediaPath);

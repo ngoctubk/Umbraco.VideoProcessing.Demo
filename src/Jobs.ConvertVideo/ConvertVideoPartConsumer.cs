@@ -18,15 +18,9 @@ public class ConvertVideoPartConsumer(IOptions<CommonSettings> optionCommonSetti
     public async Task Consume(ConsumeContext<VideoPartResolutionSelected> context)
     {
         string mediaPath = context.Message.S3Key;
-        string originalFilePath = context.Message.OriginalFilePath;
-        string resolution = context.Message.Resolution.ToString();
 
         string rootMediaPath = _commonSettings.MediaPath;
         string fullVideoPath = Path.Join(rootMediaPath, mediaPath);
-        string directoryPath = Path.GetDirectoryName(fullVideoPath) ?? throw new InvalidOperationException("Could not get directory.");
-        string videoName = Path.GetFileName(fullVideoPath) ?? throw new InvalidOperationException("Could not get file name."); ;
-        string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fullVideoPath) ?? throw new InvalidOperationException("Could not get file name without extension.");
-        string extension = Path.GetExtension(fullVideoPath) ?? throw new InvalidOperationException("Could not get extension.");
 
         await DownloadVideoFromS3(mediaPath, fullVideoPath);
 
@@ -50,8 +44,9 @@ public class ConvertVideoPartConsumer(IOptions<CommonSettings> optionCommonSetti
 
         string fullOriginalFilePath = Path.Join(rootMediaPath, originalFilePath);
         string originalFileDirectoryPath = Path.GetDirectoryName(fullOriginalFilePath) ?? throw new InvalidOperationException("Could not get directory.");
-        string convertedVideoPartPath = Path.Join(originalFileDirectoryPath, resolution, fileNameWithoutExtension + ".ts");
+        Directory.CreateDirectory(Path.Combine(originalFileDirectoryPath, resolution));
 
+        string convertedVideoPartPath = Path.Join(originalFileDirectoryPath, resolution, fileNameWithoutExtension + ".ts");
         await Cli.Wrap("ffmpeg")
                 .WithArguments(args => args
                     .Add("-i").Add(videoPartPath)

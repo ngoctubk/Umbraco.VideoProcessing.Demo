@@ -96,7 +96,18 @@ public class InitiateVideoProcessingConsumer(IPublishEndpoint publishEndpoint,
 
         string masterPlaylistContent = File.ReadAllText(_masterPlaylistFile);
         masterPlaylistContent = masterPlaylistContent.Replace(_masterPlaylistReplaceText, mediaPath);
-        await File.WriteAllTextAsync(Path.Combine(directoryPath, _masterPlaylistFile), masterPlaylistContent);
+        string masterPlaylistPath = Path.Combine(directoryPath, _masterPlaylistFile);
+        await File.WriteAllTextAsync(masterPlaylistPath, masterPlaylistContent);
+
+        string relativeFile = masterPlaylistPath.Replace(rootMediaPath, "");
+        using FileStream uploadFileStream = new(masterPlaylistPath, FileMode.Open, System.IO.FileAccess.Read);
+        var uploadRequest = new PutObjectRequest
+        {
+            BucketName = s3StorageSettings.BucketName,
+            Key = relativeFile,
+            InputStream = uploadFileStream
+        };
+        var uploadResponse = await amazonS3.PutObjectAsync(uploadRequest);
     }
 
     private static async ValueTask<string> GetRawMetadataOfVideo(string directoryPath, string videoName)

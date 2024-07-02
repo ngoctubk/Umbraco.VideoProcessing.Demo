@@ -4,3 +4,73 @@
 @{
 	Layout = null;
 }
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.21.5/dist/video-js.min.css">
+    @* <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.3.0/video-js.min.css" rel="stylesheet"> *@
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/videojs-resolution-switcher-vjs7@1.0.0/videojs-resolution-switcher.min.css">
+    
+    <link rel="stylesheet" href="@Url.Content("~/css/umbraco-starterkit-style.css")" />
+    <style>
+        .header {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        .section--header {
+            min-height: 0 !important;
+            padding-top: 60px !important;
+        }
+        .video-js {
+            magrin-bottom: 100px;
+        }
+    </style>
+    @RenderSection("Header", required: false)
+</head>
+
+<body>
+
+
+    <header class="header">
+
+        <div class="mobile-nav-handler">
+            <div class="hamburger lines" id="toggle-nav">
+                <span></span>
+            </div>
+        </div>
+
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    @* 
+    Wish not to use JQuery?
+    Insert this method call to load Umbraco Forms client dependencies without JQuery. @Html.RenderUmbracoFormDependencies()
+    *@
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>	
+    <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2.3/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/video.js@7.21.5/dist/video.min.js"></script>
+    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.3.0/video.min.js"></script> *@
+    
+    <script src="https://unpkg.com/@@videojs/http-streaming@3.10.0/dist/videojs-http-streaming.min.js"></script>
+    @* <script src="https://unpkg.com/@@videojs/http-streaming@2.16.3/dist/videojs-http-streaming.min.js"></script> *@
+    @* <script src="@Url.Content("~/scripts/videojs-http-streaming.min.js")"></script> *@
+
+    <script src="https://cdn.jsdelivr.net/npm/videojs-resolution-switcher-vjs7@1.0.0/videojs-resolution-switcher.min.js"></script>
+    <script src="@Url.Content("~/scripts/umbraco-starterkit-app.js")"></script>
+    @RenderSection("Scripts", false/*required*/)
+</body>
+
+</html>

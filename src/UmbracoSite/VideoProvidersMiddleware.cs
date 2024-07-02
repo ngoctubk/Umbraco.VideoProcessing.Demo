@@ -11,7 +11,6 @@ public class VideoS3ProvidersMiddleware(RequestDelegate next, IS3FileSystemProvi
 
     public async Task InvokeAsync(HttpContext context)
     {
-        string url = context.Request.GetDisplayUrl();
         bool isInvalidVideoUrl = !IsValidVideoRequest(context);
         if (isInvalidVideoUrl)
         {
@@ -112,6 +111,8 @@ public static class VideoProvidersMiddlewareExtensions
 
     public static IUmbracoBuilder AddS3VideoProviders(this IUmbracoBuilder builder)
     {
+        builder.Services.AddOptions<MediaExtensionsOption>()
+                        .BindConfiguration(MediaExtensionsOption.MediaExtensions);
         builder.Services.Configure<UmbracoPipelineOptions>(options =>
         {
             options.AddFilter(new UmbracoPipelineFilter("S3VideoProviders")

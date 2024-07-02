@@ -8,14 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="MasterPlaylist.m3u8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="MasterPlaylist.m3u8" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.0" />
     <PackageReference Include="CliWrap" Version="3.6.6" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />

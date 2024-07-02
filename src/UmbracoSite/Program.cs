@@ -7,8 +7,6 @@ using UmbracoSite;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<MediaExtensionsOption>(builder.Configuration.GetSection(MediaExtensionsOption.MediaExtensions));
-
 builder.CreateUmbracoBuilder()
     .AddBackOffice()
     .AddWebsite()

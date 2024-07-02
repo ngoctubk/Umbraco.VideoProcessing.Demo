@@ -26,16 +26,29 @@ public class ConvertPlaylistConsumer(IOptions<CommonSettings> optionCommonSettin
         string fullOriginalFilePath = Path.Join(rootMediaPath, originalFilePath);
 
         string originalFileDirectoryPath = Path.GetDirectoryName(fullOriginalFilePath) ?? throw new InvalidOperationException("Could not get directory.");
-        string prefixPath = Path.GetDirectoryName(originalFileDirectoryPath) ?? throw new InvalidOperationException("Could not get prefix directory.");
         string playlistName = Path.GetFileName(fullPlaylistPath) ?? throw new InvalidOperationException("Could not get file name."); ;
         string originalFileExtension = Path.GetExtension(fullOriginalFilePath) ?? throw new InvalidOperationException("Could not get extension.");
 
         await DownloadFromS3(playlistPath, fullPlaylistPath);
 
+        // Write m3u8 file 
         string m3u8Content = File.ReadAllText(fullPlaylistPath);
-        Directory.CreateDirectory(Path.Combine(prefixPath, resolution));
-        string m3u8NewContent = Regex.Replace(m3u8Content, @$"(.*)({originalFileExtension})", Path.Combine(prefixPath, resolution, "$1" + ".ts"));
-        await File.WriteAllTextAsync(Path.Combine(prefixPath, resolution, playlistName), m3u8NewContent);
+        Directory.CreateDirectory(Path.Combine(originalFileDirectoryPath, resolution));
+        string originalFileRelativeDirectoryPath = originalFileDirectoryPath.Replace(rootMediaPath, "");
+        string m3u8NewContent = Regex.Replace(m3u8Content, @$"(.*)({originalFileExtension})", Path.Combine(originalFileRelativeDirectoryPath, resolution, "$1" + ".ts"));
+        string playlistAbsolutePath = Path.Combine(originalFileDirectoryPath, resolution, playlistName);
+        await File.WriteAllTextAsync(playlistAbsolutePath, m3u8NewContent);
+
+        // Upload to S3
+        using FileStream uploadFileStream = new(playlistAbsolutePath, FileMode.Open, System.IO.FileAccess.Read);
+        string playlistRelativePath = playlistAbsolutePath.Replace(rootMediaPath, "");
+        var uploadRequest = new PutObjectRequest
+        {
+            BucketName = s3StorageSettings.BucketName,
+            Key = playlistRelativePath,
+            InputStream = uploadFileStream
+        };
+        var uploadResponse = await amazonS3.PutObjectAsync(uploadRequest);
 
         await PublishPlaylistConvertedEvent(playlistPath, context.Message.Resolution, originalFilePath);
     }
