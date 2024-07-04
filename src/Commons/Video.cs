@@ -10,7 +10,6 @@ public class Video
     public bool IsExtracted { get; set; }
     public bool IsCut { get; set; }
     public string? RawMetadata { get; set; }
-    public Guid? SuccessEventId { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime ModifiedDate { get; set; }
 }

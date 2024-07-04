@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using CliWrap;
+using Commons;
 using MassTransit;
 using MassTransit.Messages;
 using Microsoft.Extensions.Options;
@@ -10,6 +11,7 @@ namespace Jobs.SliceVideo;
 public class SliceVideoConsumer(IOptions<CommonSettings> optionCommonSettings,
                                 IPublishEndpoint publishEndpoint,
                                 S3StorageSettings s3StorageSettings,
+                                MediaProcessingDbContext dbContext,
                                 IAmazonS3 amazonS3) : IConsumer<VideoProccessed>
 {
     private readonly CommonSettings _commonSettings = optionCommonSettings.Value;
@@ -18,6 +20,8 @@ public class SliceVideoConsumer(IOptions<CommonSettings> optionCommonSettings,
     public async Task Consume(ConsumeContext<VideoProccessed> context)
     {
         string mediaPath = context.Message.S3Key;
+
+        await AddSliceVideoEvent(mediaPath);
 
         string rootMediaPath = _commonSettings.MediaPath;
         string fullVideoPath = Path.Join(rootMediaPath, mediaPath);
@@ -68,6 +72,17 @@ public class SliceVideoConsumer(IOptions<CommonSettings> optionCommonSettings,
         }
 
         await PublishVideoCutEvent(mediaPath);
+    }
+
+    private async ValueTask AddSliceVideoEvent(string mediaPath)
+    {
+        var videoEvent = new VideoEvent {
+            VideoPath = mediaPath,
+            Event = EventName,
+            EventDate = DateTime.Now
+        };
+        dbContext.Add(videoEvent);
+        await dbContext.SaveChangesAsync();
     }
 
     private async ValueTask UploadFileToS3(string file, string relativeFile)

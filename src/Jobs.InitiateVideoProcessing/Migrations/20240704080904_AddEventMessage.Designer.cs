@@ -4,6 +4,7 @@ using Jobs.InitiateVideoProcessing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Jobs.InitiateVideoProcessing.Migrations
 {
     [DbContext(typeof(MediaProcessingDbContext))]
-    partial class MediaProcessingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240704080904_AddEventMessage")]
+    partial class AddEventMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,21 +37,8 @@ namespace Jobs.InitiateVideoProcessing.Migrations
                     b.Property<bool>("IsDone")
                         .HasColumnType("bit");
 
-                    b.Property<string>("MediaPartPath")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Resolution")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TaskContent")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("nvarchar(400)");
 
                     b.Property<string>("TaskName")
                         .IsRequired()
@@ -63,8 +53,6 @@ namespace Jobs.InitiateVideoProcessing.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedDate");
-
-                    b.HasIndex("MediaPartPath");
 
                     b.HasIndex("ModifiedDate");
 

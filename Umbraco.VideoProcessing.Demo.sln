@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.SelectResolution", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.ConvertVideo", "src\Jobs.ConvertVideo\Jobs.ConvertVideo.csproj", "{662B4ADB-1675-4C65-A2E5-4DB59896812B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.MonitorProcessing", "src\Jobs.MonitorProcessing\Jobs.MonitorProcessing.csproj", "{18949D0F-35F8-4E38-A48D-BEC162765BC8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{662B4ADB-1675-4C65-A2E5-4DB59896812B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{662B4ADB-1675-4C65-A2E5-4DB59896812B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{662B4ADB-1675-4C65-A2E5-4DB59896812B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18949D0F-35F8-4E38-A48D-BEC162765BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18949D0F-35F8-4E38-A48D-BEC162765BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18949D0F-35F8-4E38-A48D-BEC162765BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18949D0F-35F8-4E38-A48D-BEC162765BC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{A2595334-E975-41C5-AAF5-42EDB20F5639} = {D8381195-9DAE-44A2-A8A2-EB967FB05CFF}
 		{47AEE62A-D862-402D-8D48-895DE17F7B5A} = {D8381195-9DAE-44A2-A8A2-EB967FB05CFF}
 		{662B4ADB-1675-4C65-A2E5-4DB59896812B} = {D8381195-9DAE-44A2-A8A2-EB967FB05CFF}
+		{18949D0F-35F8-4E38-A48D-BEC162765BC8} = {D8381195-9DAE-44A2-A8A2-EB967FB05CFF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7CE67B6D-8040-44F4-B36F-5712BCE926AA}

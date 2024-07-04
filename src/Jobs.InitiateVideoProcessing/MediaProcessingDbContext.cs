@@ -8,9 +8,12 @@ public class MediaProcessingDbContext(DbContextOptions<MediaProcessingDbContext>
 {
     public DbSet<Video> Videos { get; set; }
     public DbSet<VideoEvent> VideoEvents { get; set; }
+    public DbSet<ProcessingTask> ProcessingTasks { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfiguration(new VideoConfiguration());
+        modelBuilder.ApplyConfiguration(new VideoEventConfiguration());
+        modelBuilder.ApplyConfiguration(new ProcessingTaskConfiguration());
     }
 }

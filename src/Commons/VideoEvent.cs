@@ -6,9 +6,9 @@ namespace Commons;
 public class VideoEvent
 {
     public Guid Id { get; set; }
-    public Guid VideoId { get; set; }
     public required string VideoPath { get; set; }
     public required string Event { get; set; }
+    public string? EventMessage { get; set; }
     public DateTime EventDate { get; set; }
 }
 
@@ -21,8 +21,6 @@ public class VideoEventConfiguration : IEntityTypeConfiguration<VideoEvent>
         builder.HasKey(a => a.Id);
         builder.Property(a => a.Id).ValueGeneratedOnAdd();
 
-        builder.HasIndex(a => a.VideoId);
-
         builder.Property(a => a.VideoPath).IsRequired();
         builder.Property(a => a.VideoPath).HasMaxLength(250);
         builder.HasIndex(a => a.VideoPath);
@@ -30,6 +28,8 @@ public class VideoEventConfiguration : IEntityTypeConfiguration<VideoEvent>
         builder.Property(a => a.Event).IsRequired();
         builder.Property(a => a.Event).HasMaxLength(100);
         builder.HasIndex(a => a.Event);
+
+        builder.Property(a => a.EventMessage).HasMaxLength(400);
 
         builder.Property(a => a.EventDate).IsRequired();
         builder.HasIndex(a => a.EventDate);

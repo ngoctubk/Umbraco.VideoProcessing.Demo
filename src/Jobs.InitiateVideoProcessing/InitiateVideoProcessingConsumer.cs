@@ -40,9 +40,21 @@ public class InitiateVideoProcessingConsumer(IPublishEndpoint publishEndpoint,
 
     private async ValueTask InitiateVideoProcessing(string mediaPath)
     {
+        await AddInitiateVideoProcessingEvent(mediaPath);
         await ExtractVideoInformation(mediaPath);
         await CreateMasterPlaylist(mediaPath);
         await PublishVideoProccessedEvent(mediaPath);
+    }
+
+    private async ValueTask AddInitiateVideoProcessingEvent(string mediaPath)
+    {
+        var videoEvent = new VideoEvent {
+            VideoPath = mediaPath,
+            Event = EventName,
+            EventDate = DateTime.Now
+        };
+        dbContext.Add(videoEvent);
+        await dbContext.SaveChangesAsync();
     }
 
     private async ValueTask ExtractVideoInformation(string mediaPath)
@@ -56,7 +68,6 @@ public class InitiateVideoProcessingConsumer(IPublishEndpoint publishEndpoint,
         DateTime eventDate = DateTime.Now;
         if (video is null)
         {
-            // Video does not exist
             video = new Video
             {
                 VideoPath = mediaPath,
@@ -75,15 +86,6 @@ public class InitiateVideoProcessingConsumer(IPublishEndpoint publishEndpoint,
             video.ModifiedDate = eventDate;
             video.IsExtracted = true;
         }
-
-        var videoEvent = new VideoEvent
-        {
-            VideoPath = mediaPath,
-            VideoId = video.Id,
-            EventDate = eventDate,
-            Event = EventName
-        };
-        dbContext.Add(videoEvent);
 
         await dbContext.SaveChangesAsync();
     }

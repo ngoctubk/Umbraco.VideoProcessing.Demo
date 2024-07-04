@@ -1,7 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
 
-namespace Jobs.SelectResolution;
+namespace Jobs.MonitorProcessing;
 
 public static class MassTransitBuilder
 {
@@ -14,8 +14,9 @@ public static class MassTransitBuilder
         {
             busConfiguration.SetKebabCaseEndpointNameFormatter();
 
-            busConfiguration.AddConsumer<SelectVideoPartResolutionConsumer>();
-            busConfiguration.AddConsumer<SelectPlaylistResolutionConsumer>();
+            busConfiguration.AddConsumer<MonitorVideoSavedConsumer>();
+            busConfiguration.AddConsumer<MonitorPlaylistConvertedConsumer>();
+            busConfiguration.AddConsumer<MonitorVideoPartConvertedConsumer>();
 
             busConfiguration.UsingRabbitMq((context, configurator) =>
             {

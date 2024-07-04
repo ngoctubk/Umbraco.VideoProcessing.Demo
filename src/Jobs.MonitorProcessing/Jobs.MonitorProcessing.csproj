@@ -4,12 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-Jobs.ConvertVideo-fa4e133a-0c53-4a32-b95a-6efb2310558e</UserSecretsId>
+    <UserSecretsId>dotnet-Jobs.MonitorProcessing-dc901ec1-780b-48dd-bf58-a700457dbd30</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.0" />
-    <PackageReference Include="CliWrap" Version="3.6.6" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />

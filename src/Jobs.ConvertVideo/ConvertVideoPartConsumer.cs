@@ -1,6 +1,8 @@
-﻿using Amazon.S3;
+﻿using System.Text.Json;
+using Amazon.S3;
 using Amazon.S3.Model;
 using CliWrap;
+using Commons;
 using Jobs.ConvertVideo.Settings;
 using MassTransit;
 using MassTransit.Messages;
@@ -11,12 +13,19 @@ namespace Jobs.ConvertVideo;
 public class ConvertVideoPartConsumer(IOptions<CommonSettings> optionCommonSettings,
                                      IPublishEndpoint publishEndpoint,
                                      S3StorageSettings s3StorageSettings,
+                                     MediaProcessingDbContext dbContext,
                                      IAmazonS3 amazonS3) : IConsumer<VideoPartResolutionSelected>
 {
     private readonly CommonSettings _commonSettings = optionCommonSettings.Value;
+    private const string EventName = "VideoPartResolutionSelected";
+    private const string TaskName = "VideoPartResolutionConvert";
 
     public async Task Consume(ConsumeContext<VideoPartResolutionSelected> context)
     {
+        await AddVideoPartResolutionSelectedEvent(context.Message);
+
+        var processingTaskId = await AddVideoPartResolutionConvertTask(context.Message);
+
         string mediaPath = context.Message.S3Key;
 
         string rootMediaPath = _commonSettings.MediaPath;
@@ -28,7 +37,39 @@ public class ConvertVideoPartConsumer(IOptions<CommonSettings> optionCommonSetti
 
         await UploadVideoPartToS3(context);
 
-        await PublishVideoConvertedEvent(context);
+        await PublishVideoConvertedEvent(context, processingTaskId);
+    }
+
+    private async ValueTask<Guid> AddVideoPartResolutionConvertTask(VideoPartResolutionSelected message)
+    {
+        DateTime currentDate = DateTime.Now;
+        var processingTask = new ProcessingTask {
+            VideoPath = message.OriginalFilePath,
+            MediaPartPath = message.S3Key,
+            Resolution = message.Resolution,
+            TaskName = TaskName,
+            TaskContent = JsonSerializer.Serialize(message),
+            IsDone = false,
+            CreatedDate = currentDate,
+            ModifiedDate = currentDate
+        };
+        dbContext.Add(processingTask);
+        await dbContext.SaveChangesAsync();
+
+        return processingTask.Id;
+    }
+
+    private async ValueTask AddVideoPartResolutionSelectedEvent(VideoPartResolutionSelected message)
+    {
+        var videoEvent = new VideoEvent
+        {
+            VideoPath = message.OriginalFilePath,
+            Event = EventName,
+            EventMessage = JsonSerializer.Serialize(message),
+            EventDate = DateTime.Now
+        };
+        dbContext.Add(videoEvent);
+        await dbContext.SaveChangesAsync();
     }
 
     private async ValueTask ConvertVideoPart(ConsumeContext<VideoPartResolutionSelected> context)
@@ -85,7 +126,7 @@ public class ConvertVideoPartConsumer(IOptions<CommonSettings> optionCommonSetti
         var uploadResponse = await amazonS3.PutObjectAsync(uploadRequest);
     }
 
-    private async ValueTask PublishVideoConvertedEvent(ConsumeContext<VideoPartResolutionSelected> context)
+    private async ValueTask PublishVideoConvertedEvent(ConsumeContext<VideoPartResolutionSelected> context, Guid processingTaskId)
     {
         string videoPartPath = context.Message.S3Key;
         string originalFilePath = context.Message.OriginalFilePath;
@@ -95,7 +136,8 @@ public class ConvertVideoPartConsumer(IOptions<CommonSettings> optionCommonSetti
         {
             S3Key = videoPartPath,
             Resolution = resolution,
-            OriginalFilePath = originalFilePath
+            OriginalFilePath = originalFilePath,
+            ProcessingTaskId = processingTaskId
         };
         using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(120));
         await publishEndpoint.Publish(message, context => context.Durable = true, cancellationTokenSource.Token);

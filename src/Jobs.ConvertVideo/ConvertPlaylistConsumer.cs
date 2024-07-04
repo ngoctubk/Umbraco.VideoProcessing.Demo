@@ -1,6 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Commons;
 using Jobs.ConvertVideo.Settings;
 using MassTransit;
 using MassTransit.Messages;
@@ -11,16 +13,23 @@ namespace Jobs.ConvertVideo;
 public class ConvertPlaylistConsumer(IOptions<CommonSettings> optionCommonSettings,
                                      IPublishEndpoint publishEndpoint,
                                      S3StorageSettings s3StorageSettings,
+                                     MediaProcessingDbContext dbContext,
                                      IAmazonS3 amazonS3) : IConsumer<PlaylistResolutionSelected>
 {
     private readonly CommonSettings _commonSettings = optionCommonSettings.Value;
+    private const string EventName = "PlaylistResolutionSelected";
+    private const string TaskName = "PlaylistResolutionConvert";
 
     public async Task Consume(ConsumeContext<PlaylistResolutionSelected> context)
     {
+        await AddPlaylistResolutionSelectedEvent(context.Message);
+
+        Guid processingTaskId = await AddPlaylistResolutionConvertTask(context.Message);
+
         string playlistPath = context.Message.S3Key;
         string originalFilePath = context.Message.OriginalFilePath;
         string resolution = context.Message.Resolution.ToString();
-        
+
         string rootMediaPath = _commonSettings.MediaPath;
         string fullPlaylistPath = Path.Join(rootMediaPath, playlistPath);
         string fullOriginalFilePath = Path.Join(rootMediaPath, originalFilePath);
@@ -50,7 +59,40 @@ public class ConvertPlaylistConsumer(IOptions<CommonSettings> optionCommonSettin
         };
         var uploadResponse = await amazonS3.PutObjectAsync(uploadRequest);
 
-        await PublishPlaylistConvertedEvent(playlistPath, context.Message.Resolution, originalFilePath);
+        await PublishPlaylistConvertedEvent(playlistPath, context.Message.Resolution, originalFilePath, processingTaskId);
+    }
+
+    private async ValueTask<Guid> AddPlaylistResolutionConvertTask(PlaylistResolutionSelected message)
+    {
+        DateTime currentDate = DateTime.Now;
+        var processingTask = new ProcessingTask
+        {
+            VideoPath = message.OriginalFilePath,
+            MediaPartPath = message.S3Key,
+            Resolution = message.Resolution,
+            TaskName = TaskName,
+            TaskContent = JsonSerializer.Serialize(message),
+            IsDone = false,
+            CreatedDate = currentDate,
+            ModifiedDate = currentDate
+        };
+        dbContext.Add(processingTask);
+        await dbContext.SaveChangesAsync();
+
+        return processingTask.Id;
+    }
+
+    private async ValueTask AddPlaylistResolutionSelectedEvent(PlaylistResolutionSelected message)
+    {
+        var videoEvent = new VideoEvent
+        {
+            VideoPath = message.OriginalFilePath,
+            Event = EventName,
+            EventMessage = JsonSerializer.Serialize(message),
+            EventDate = DateTime.Now
+        };
+        dbContext.Add(videoEvent);
+        await dbContext.SaveChangesAsync();
     }
 
     private async ValueTask DownloadFromS3(string mediaPath, string fullVideoPath)
@@ -71,13 +113,14 @@ public class ConvertPlaylistConsumer(IOptions<CommonSettings> optionCommonSettin
         }
     }
 
-    private async ValueTask PublishPlaylistConvertedEvent(string playlistPath, int resolution, string originalFilePath)
+    private async ValueTask PublishPlaylistConvertedEvent(string playlistPath, int resolution, string originalFilePath, Guid processingTaskId)
     {
         PlaylistConverted message = new()
         {
             S3Key = playlistPath,
             Resolution = resolution,
-            OriginalFilePath = originalFilePath
+            OriginalFilePath = originalFilePath,
+            ProcessingTaskId = processingTaskId
         };
         using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(120));
         await publishEndpoint.Publish(message, context => context.Durable = true, cancellationTokenSource.Token);
