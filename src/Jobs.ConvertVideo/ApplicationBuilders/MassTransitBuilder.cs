@@ -17,6 +17,7 @@ public static class MassTransitBuilder
 
             busConfiguration.AddConsumer<ConvertPlaylistConsumer>();
             busConfiguration.AddConsumer<ConvertVideoPartConsumer>();
+            busConfiguration.AddConsumer<RedoProcessingTaskConsumer>();
 
             busConfiguration.UsingRabbitMq((context, configurator) =>
             {

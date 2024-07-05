@@ -10,6 +10,9 @@ builder.Services.Configure<CommonSettings>(builder.Configuration.GetSection("Com
 builder.Services.AddDbContext<MediaProcessingDbContext>(options => 
                     options.UseSqlServer(builder.Configuration.GetConnectionString("MediaProcessMetadataConnectionString")));
 
+builder.Services.AddTransient<PlaylistConvertorService>();
+builder.Services.AddTransient<VideoPartConvertorService>();
+
 builder.AddAmazonS3();
 builder.AddMassTransit();
 

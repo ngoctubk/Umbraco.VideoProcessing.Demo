@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.ConvertVideo", "src\Jo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jobs.MonitorProcessing", "src\Jobs.MonitorProcessing\Jobs.MonitorProcessing.csproj", "{18949D0F-35F8-4E38-A48D-BEC162765BC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CronJobs.SupportTask", "src\CronJobs.SupportTask\CronJobs.SupportTask.csproj", "{FC106F1A-BCF2-4D40-999E-835A0E3A7838}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{18949D0F-35F8-4E38-A48D-BEC162765BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18949D0F-35F8-4E38-A48D-BEC162765BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18949D0F-35F8-4E38-A48D-BEC162765BC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC106F1A-BCF2-4D40-999E-835A0E3A7838}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC106F1A-BCF2-4D40-999E-835A0E3A7838}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC106F1A-BCF2-4D40-999E-835A0E3A7838}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC106F1A-BCF2-4D40-999E-835A0E3A7838}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +78,7 @@ Global
 		{47AEE62A-D862-402D-8D48-895DE17F7B5A} = {D8381195-9DAE-44A2-A8A2-EB967FB05CFF}
 		{662B4ADB-1675-4C65-A2E5-4DB59896812B} = {D8381195-9DAE-44A2-A8A2-EB967FB05CFF}
 		{18949D0F-35F8-4E38-A48D-BEC162765BC8} = {D8381195-9DAE-44A2-A8A2-EB967FB05CFF}
+		{FC106F1A-BCF2-4D40-999E-835A0E3A7838} = {D8381195-9DAE-44A2-A8A2-EB967FB05CFF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7CE67B6D-8040-44F4-B36F-5712BCE926AA}

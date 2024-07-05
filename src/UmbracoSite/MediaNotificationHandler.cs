@@ -26,7 +26,7 @@ public class MediaNotificationHandler(IOptions<MediaExtensionsOption> options,
                     S3Key = mediaPath
                 };
                 await publishEndpoint.Publish(message, context => context.Durable = true, cancellationToken: cancellationToken);
-                
+
                 await dbContext.SaveChangesAsync(cancellationToken);
             }
         }
