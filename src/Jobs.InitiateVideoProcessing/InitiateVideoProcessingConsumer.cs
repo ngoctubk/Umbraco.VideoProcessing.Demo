@@ -26,13 +26,13 @@ public class InitiateVideoProcessingConsumer(IPublishEndpoint publishEndpoint,
     public async Task Consume(ConsumeContext<VideoSaved> context)
     {
         string mediaPath = context.Message.S3Key;
+        
+        await AddInitiateVideoProcessingEvent(mediaPath);
 
         // Make sure that only 1 consumer is processing 1 video (with the same mediaPath) at a time.
         var expiry = TimeSpan.FromSeconds(30);
-        var wait = TimeSpan.FromSeconds(5);
-        var retry = TimeSpan.FromSeconds(1);
         await redisLockHandler
-                    .PerformActionWithLock(mediaPath, expiry, wait, retry, async () =>
+                    .PerformActionWithLock(mediaPath, expiry, async () =>
                     {
                         await InitiateVideoProcessing(mediaPath);
                     });
@@ -40,7 +40,6 @@ public class InitiateVideoProcessingConsumer(IPublishEndpoint publishEndpoint,
 
     private async ValueTask InitiateVideoProcessing(string mediaPath)
     {
-        await AddInitiateVideoProcessingEvent(mediaPath);
         await ExtractVideoInformation(mediaPath);
         await CreateMasterPlaylist(mediaPath);
         await PublishVideoProccessedEvent(mediaPath);

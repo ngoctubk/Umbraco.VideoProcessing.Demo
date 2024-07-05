@@ -50,7 +50,22 @@ public class RedisLockHandler : IDisposable
             return false;
         }
 
-        _logger.LogDebug("Lock acquired for resource {Resource}", resource);
+        _logger.LogInformation("Lock acquired for resource {Resource}", resource);
+        await action();
+
+        return true;
+    }
+
+    public async Task<bool> PerformActionWithLock(string resource, TimeSpan expirationTime, Func<Task> action)
+    {
+        await using var redLock = await _redLockFactory.CreateLockAsync(resource, expirationTime);
+        if (!redLock.IsAcquired)
+        {
+            _logger.LogError("Could not acquire lock for resource {Resource}", resource);
+            return false;
+        }
+
+        _logger.LogWarning("Lock acquired for resource {Resource}", resource);
         await action();
 
         return true;

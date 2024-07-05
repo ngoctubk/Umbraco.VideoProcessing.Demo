@@ -4,6 +4,7 @@ using CliWrap;
 using Commons;
 using MassTransit;
 using MassTransit.Messages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Jobs.SliceVideo;
@@ -23,6 +24,13 @@ public class SliceVideoConsumer(IOptions<CommonSettings> optionCommonSettings,
 
         await AddSliceVideoEvent(mediaPath);
 
+        await SliceVideo(mediaPath);
+
+        await PublishVideoCutEvent(mediaPath);
+    }
+
+    private async Task SliceVideo(string mediaPath)
+    {
         string rootMediaPath = _commonSettings.MediaPath;
         string fullVideoPath = Path.Join(rootMediaPath, mediaPath);
         string directoryPath = Path.GetDirectoryName(fullVideoPath) ?? throw new InvalidOperationException("Could not get directory.");
@@ -70,8 +78,6 @@ public class SliceVideoConsumer(IOptions<CommonSettings> optionCommonSettings,
             await UploadFileToS3(file, relativeFile);
             await PublishVideoPartUploadedEvent(relativeFile, mediaPath);
         }
-
-        await PublishVideoCutEvent(mediaPath);
     }
 
     private async ValueTask AddSliceVideoEvent(string mediaPath)

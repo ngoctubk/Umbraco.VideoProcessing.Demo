@@ -90,6 +90,7 @@ public class ConvertVideoPartConsumer(IOptions<CommonSettings> optionCommonSetti
         string convertedVideoPartPath = Path.Join(originalFileDirectoryPath, resolution, fileNameWithoutExtension + ".ts");
         await Cli.Wrap("ffmpeg")
                 .WithArguments(args => args
+                    .Add("-y")
                     .Add("-i").Add(videoPartPath)
                     .Add("-vf").Add("scale=-2:360")
                     .Add("-crf").Add("30")

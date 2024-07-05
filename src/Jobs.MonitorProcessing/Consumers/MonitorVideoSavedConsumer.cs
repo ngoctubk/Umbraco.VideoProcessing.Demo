@@ -2,7 +2,6 @@
 using MassTransit;
 using MassTransit.Messages;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace Jobs.MonitorProcessing;
 
