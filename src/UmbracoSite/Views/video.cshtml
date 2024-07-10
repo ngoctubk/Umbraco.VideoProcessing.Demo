@@ -15,6 +15,7 @@
 </div>
 
 <video id="my-video-split" class="video-js vjs-default-skin" controls preload="auto" width="640" height="264">
+    <source src="@videoRoot?res=auto" type="application/x-mpegURL" res="auto" label="auto">
 </video>
 
 @section Scripts {
@@ -36,12 +37,12 @@
                 }
             });
 
-            var sourceUrl = '@videoRoot?res=auto';
+            @* var sourceUrl = '@videoRoot?res=auto';
 
             player.src({
                 src: sourceUrl,
                 type: 'application/x-mpegURL'
-            });
+            }); *@
 
             player.ready(function () {
                 player.hlsQualitySelector({
