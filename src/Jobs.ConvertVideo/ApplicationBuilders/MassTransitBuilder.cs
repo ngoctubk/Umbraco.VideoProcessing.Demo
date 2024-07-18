@@ -26,7 +26,7 @@ public static class MassTransitBuilder
                                             .SetActivationThreshold(10)
                                             .SetTripThreshold(0.2)
                                             .SetRestartTimeout(m: 1));
-                configurator.PrefetchCount = 20;
+                configurator.PrefetchCount = 5;
                 MessageBrokerSettings settings = context.GetRequiredService<MessageBrokerSettings>();
 
                 configurator.Host(new Uri(settings.Host), h =>

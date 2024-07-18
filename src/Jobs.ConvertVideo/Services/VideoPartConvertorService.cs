@@ -94,11 +94,12 @@ public class VideoPartConvertorService(IOptions<CommonSettings> optionCommonSett
         Directory.CreateDirectory(Path.Combine(originalFileDirectoryPath, resolution));
 
         string convertedVideoPartPath = Path.Join(originalFileDirectoryPath, resolution, fileNameWithoutExtension + ".ts");
+        string scale = $"scale=-2:{resolution}";
         await Cli.Wrap("ffmpeg")
                 .WithArguments(args => args
                     .Add("-y")
                     .Add("-i").Add(videoPartPath)
-                    .Add("-vf").Add("scale=-2:360")
+                    .Add("-vf").Add(scale)
                     .Add("-crf").Add("30")
                     .Add("-c:v").Add("libx264")
                     .Add("-c:a").Add("aac")
