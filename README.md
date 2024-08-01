@@ -47,10 +47,12 @@ Project to delete old converted files, requeue converted videos with errors, red
 
 - Install Dev Containers extension in Visual Studio code
 - View -> Command Palette: Use Dev Containers: Clone Repository in Container Volume
+- Run MinIO, create user with permissions, create access key and replace in appsettings.json of all projects
 - RUN `make run-all`
 
 ### Manual
 
 - Install: SQL Server 2019, Redis, MinIO, RabbitMQ
 - Change connections in appsettings.json of all projects
+- Run MinIO, create user with permissions, create access key and replace in appsettings.json of all projects
 - Run projects: UmbracoSite, Jobs.InitiateVideoProcessing, Jobs.SliceVideo, Jobs.SelectResolution, Jobs.ConvertVideo, Jobs.MonitorProcessing
