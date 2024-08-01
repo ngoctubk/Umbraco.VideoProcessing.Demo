@@ -55,4 +55,5 @@ Project to delete old converted files, requeue converted videos with errors, red
 - Install: SQL Server 2019, Redis, MinIO, RabbitMQ
 - Change connections in appsettings.json of all projects
 - Run MinIO, create user with permissions, create access key and replace in appsettings.json of all projects
+- Run sql script to initialize system
 - Run projects: UmbracoSite, Jobs.InitiateVideoProcessing, Jobs.SliceVideo, Jobs.SelectResolution, Jobs.ConvertVideo, Jobs.MonitorProcessing
